@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -17,76 +17,63 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { prompt } = req.body;
+    const { prompt, dietType = '', systemPrompt } = req.body;
 
     if (!prompt) {
       return res.status(400).json({ error: 'Prompt is required' });
     }
 
     // Check if API key exists
-    if (!process.env.GEMINI_API_KEY) {
-      console.error('GEMINI_API_KEY environment variable is not set');
-      return res.status(500).json({ error: 'API key not configured' });
+    if (!process.env.GROQ_API_KEY) {
+      console.error('GROQ_API_KEY environment variable is not set');
+      return res.status(500).json({ error: 'Groq API key not configured. Please set GROQ_API_KEY in Vercel environment variables.' });
     }
 
-    console.log('Initializing Google Generative AI...');
-    // Initialize Google Generative AI
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    
-    // First, list available models
-    console.log('Listing available models...');
-    let availableModels = [];
-    try {
-      const models = await genAI.listModels();
-      availableModels = models.map(model => model.name);
-      console.log('Available models:', availableModels);
-    } catch (listError) {
-      console.log('Could not list models:', listError.message);
-    }
-    
-    // Try available models first, then fallback to common names
-    const modelNamesToTry = [
-      ...availableModels,
-      'gemini-1.5-pro',
-      'gemini-pro',
-      'gemini-1.5-flash',
-      'models/gemini-1.5-pro',
-      'models/gemini-pro'
-    ].filter((value, index, self) => self.indexOf(value) === index); // Remove duplicates
-    
-    console.log('Models to try:', modelNamesToTry);
-    
-    let result;
-    let lastError;
-    
-    for (const modelName of modelNamesToTry) {
-      try {
-        console.log(`Trying model: ${modelName}`);
-        const model = genAI.getGenerativeModel({ model: modelName });
+    console.log('Initializing Groq AI...');
+    const groq = new Groq({
+      apiKey: process.env.GROQ_API_KEY
+    });
 
-        // Add system instruction in the prompt instead
-        const fullPrompt = `You are a nutrition expert specializing in liver-friendly Mediterranean diets for NAFLD. Always output as a clean markdown table with columns: Day, Breakfast, Lunch, Dinner, Snacks. Include approximate calories and why it's liver-healthy.
+    // Use dynamic system prompt if provided, otherwise use default
+    const finalSystemPrompt = systemPrompt || 'You are a nutrition expert specializing in healthy meal planning. Always respond with well-formatted markdown tables.';
 
-        ${prompt}`;
+    // Build the full prompt with system instructions
+    const fullPrompt = `${finalSystemPrompt}
 
-        // Generate content
-        console.log('Generating content...');
-        result = await model.generateContent(fullPrompt);
-        console.log(`Success with model: ${modelName}`);
-        break;
-      } catch (modelError) {
-        console.log(`Failed with model ${modelName}:`, modelError.message);
-        lastError = modelError;
-        continue;
-      }
-    }
+Create a detailed meal plan based on this request: ${prompt}
+
+Requirements:
+- Output as a clean markdown table with columns: Day, Breakfast, Lunch, Dinner, Snacks
+- Include approximate calories for each meal
+- Explain why each meal is healthy for the ${dietType || 'chosen'} diet
+- Focus on ${dietType === 'Low-Sugar' ? 'low-glycemic foods and blood sugar management' : dietType === 'Vegetarian' ? 'plant-based nutrition and protein balance' : dietType === 'Liver-Centric' ? 'Mediterranean diet principles and liver health' : 'balanced nutrition principles'}
+- Avoid processed foods${dietType === 'Low-Sugar' ? ', refined sugars, and high-glycemic foods' : dietType === 'Vegetarian' ? ' and any animal products' : dietType === 'Liver-Centric' ? ', refined sugars, and excessive saturated fats' : ' and unhealthy ingredients'}
+- Keep portions moderate and balanced
+
+Please format as a proper markdown table.`;
+
+    console.log('Generating content with Groq...');
+    console.log('Diet type:', dietType);
+    console.log('System prompt:', finalSystemPrompt);
     
-    if (!result) {
-      throw new Error(`All models failed. Available models were: ${availableModels.join(', ')}. Last error: ${lastError?.message}`);
-    }
+    const completion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: finalSystemPrompt
+        },
+        {
+          role: "user", 
+          content: fullPrompt
+        }
+      ],
+      model: "llama-3.1-8b-instant", // Updated to current supported model
+      temperature: 0.7,
+      max_tokens: 2000
+    });
 
-    const response = await result.response;
-    const menu = response.text();
+    const menu = completion.choices[0]?.message?.content || "Unable to generate menu";
+    console.log('Successfully generated menu');
 
     return res.status(200).json({ menu });
 
