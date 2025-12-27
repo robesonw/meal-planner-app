@@ -1,38 +1,736 @@
 .App {
   text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem 0;
+  color: white;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.App-header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 300;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+.App-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.diet-selector {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.diet-selector:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+
+.diet-selector h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.diet-dropdown {
+  padding: 15px 20px;
+  font-size: 16px;
+  border: 2px solid #e1e8ed;
+  border-radius: 25px;
+  background: white;
+  cursor: pointer;
+  min-width: 280px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.diet-dropdown:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: scale(1.02);
+}
+
+.diet-dropdown:hover {
+  border-color: #667eea;
+  transform: scale(1.01);
+}
+
+.search-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+
+.search-section h4 {
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 15px 20px;
+  font-size: 16px;
+  border: 2px solid #e1e8ed;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: scale(1.01);
+}
+
+.search-input::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+.search-results {
+  margin: 1rem 0 0 0;
+  color: #667eea;
+  font-weight: 500;
+  font-style: italic;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.dietary-notes-section {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dietary-notes-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+
+.dietary-notes-section h4 {
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dietary-notes-textarea {
+  width: 100%;
+  padding: 15px 20px;
+  font-size: 16px;
+  border: 2px solid #e1e8ed;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.dietary-notes-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: scale(1.01);
+}
+
+.dietary-notes-textarea::placeholder {
+  color: #aaa;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.notes-buttons {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0 1rem 0;
+  flex-wrap: wrap;
+}
+
+.apply-notes-button, .reset-notes-button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.apply-notes-button {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.apply-notes-button:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+  background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
+}
+
+.apply-notes-button:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.reset-notes-button {
+  background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+}
+
+.reset-notes-button:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
+  background: linear-gradient(135deg, #e0a800 0%, #dc6545 100%);
+}
+
+.reset-notes-button:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.notes-help {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 1rem;
+  border-radius: 10px;
+  border-left: 4px solid #667eea;
+  margin-top: 1rem;
+}
+
+.notes-help p {
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+  color: #333;
+}
+
+.notes-help ul {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: #666;
+}
+
+.notes-help li {
+  margin-bottom: 0.3rem;
+  font-style: italic;
+}
+
+.error-message {
+  background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-left: 4px solid #dc3545;
+}
+
+.error-message p {
+  margin: 0;
+  color: #721c24;
+  font-weight: 500;
+}
+
+.error-display {
+  background: white;
+  padding: 3rem;
+  border-radius: 15px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  text-align: center;
+  margin-top: 2rem;
+  border: 2px solid #f8d7da;
+}
+
+.error-display p {
+  font-size: 1.2rem;
+  color: #721c24;
+  margin: 0 0 1.5rem 0;
+  font-weight: 500;
+}
+
+.retry-button {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.retry-button:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+  background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+}
+
+.loading-message {
+  background: white;
+  padding: 3rem;
+  border-radius: 15px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  text-align: center;
+  margin-top: 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  gap: 1rem;
+}
+
+.loading-message p {
+  font-size: 1.2rem;
+  color: #667eea;
+  margin: 0;
+  font-weight: 500;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e1e8ed;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.print-section {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.print-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.App-link {
-  color: #61dafb;
+.print-button:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
 }
 
-@keyframes App-logo-spin {
+.print-button:active {
+  transform: translateY(0) scale(1);
+}
+
+.print-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  display: none;
+}
+
+.print-date {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0.5rem 0 0 0;
+}
+
+/* Print-specific styles */
+@media print {
+  .print-header {
+    display: block !important;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 1rem;
+  }
+  
+  .print-header h2 {
+    color: #333;
+    font-size: 1.8rem;
+    margin: 0;
+  }
+  
+  .menu-display {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+  
+  .accordion-item {
+    page-break-inside: avoid;
+    border: 1px solid #ddd;
+    margin-bottom: 1rem;
+  }
+  
+  .accordion-header {
+    background: #f8f9fa !important;
+    color: #333 !important;
+  }
+  
+  .accordion-content {
+    max-height: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    padding: 1rem !important;
+    display: block !important;
+  }
+  
+  .accordion-icon {
+    display: none;
+  }
+  
+  .meal-item {
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    background: white !important;
+  }
+  
+  .highlight {
+    background: #ffeb3b !important;
+    -webkit-print-color-adjust: exact;
+  }
+  
+  .calories {
+    background: #667eea !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+.no-diet-message {
+  background: white;
+  padding: 3rem;
+  border-radius: 15px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  text-align: center;
+  margin-top: 2rem;
+  transition: transform 0.3s ease;
+}
+
+.no-diet-message:hover {
+  transform: translateY(-2px);
+}
+
+.no-diet-message p {
+  font-size: 1.2rem;
+  color: #666;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Smooth animations */
+@keyframes fadeIn {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
+    transform: translateY(10px);
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 1000px;
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    max-height: 1000px;
+    opacity: 1;
+  }
+  to {
+    max-height: 0;
+    opacity: 0;
+  }
+}
+
+/* Mobile-friendly responsive design */
+/* Enhanced mobile responsive design */
+@media (max-width: 1024px) {
+  .App-main {
+    max-width: 100%;
+    padding: 0 1.5rem;
+  }
+  
+  .diet-dropdown {
+    min-width: 240px;
+  }
+}
+
+@media (max-width: 768px) {
+  .App-main {
+    padding: 0 1rem;
+  }
+  
+  .App-header h1 {
+    font-size: 2rem;
+    padding: 0 1rem;
+  }
+  
+  .diet-selector, .search-section, .dietary-notes-section {
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .diet-dropdown, .search-input {
+    min-width: 100%;
+    padding: 12px 16px;
+    border-radius: 20px;
+    font-size: 15px;
+  }
+  
+  .search-section h4, .dietary-notes-section h4 {
+    font-size: 1.1rem;
+  }
+  
+  .dietary-notes-textarea {
+    padding: 12px 16px;
+    border-radius: 12px;
+    min-height: 100px;
+  }
+  
+  .notes-buttons {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  
+  .apply-notes-button, .reset-notes-button {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+  }
+  
+  .print-button {
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+    padding: 14px 20px;
+  }
+  
+  .loading-message, .error-display, .no-diet-message {
+    padding: 2rem 1rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .App {
+    min-height: 100vh;
+  }
+  
+  .App-header {
+    padding: 1.5rem 0;
+  }
+  
+  .App-header h1 {
+    font-size: 1.8rem;
+    line-height: 1.2;
+  }
+  
+  .App-main {
+    padding: 0 0.75rem;
+  }
+  
+  .diet-selector, .search-section, .dietary-notes-section, 
+  .no-diet-message, .loading-message, .error-display {
+    margin-left: 0;
+    margin-right: 0;
+    padding: 1rem;
+    border-radius: 10px;
+  }
+  
+  .diet-dropdown, .search-input {
+    padding: 10px 14px;
+    font-size: 14px;
+    border-radius: 15px;
+  }
+  
+  .dietary-notes-textarea {
+    padding: 10px 14px;
+    font-size: 14px;
+    border-radius: 10px;
+    min-height: 90px;
+  }
+  
+  .apply-notes-button, .reset-notes-button, .retry-button {
+    padding: 12px 16px;
+    font-size: 14px;
+    border-radius: 20px;
+  }
+  
+  .print-button {
+    padding: 12px 16px;
+    font-size: 14px;
+    border-radius: 20px;
+    max-width: 100%;
+  }
+  
+  .notes-help {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+  }
+  
+  .notes-help ul {
+    padding-left: 1.2rem;
+  }
+  
+  .loading-message, .error-display {
+    padding: 1.5rem 1rem;
+  }
+  
+  .loading-message p, .error-display p {
+    font-size: 1rem;
+  }
+  
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border-width: 3px;
+  }
+}
+
+/* Ultra-small screens */
+@media (max-width: 360px) {
+  .App-header h1 {
+    font-size: 1.6rem;
+  }
+  
+  .diet-selector h3, .search-section h4, .dietary-notes-section h4 {
+    font-size: 1rem;
+  }
+  
+  .diet-dropdown, .search-input, .dietary-notes-textarea {
+    font-size: 13px;
+  }
+  
+  .apply-notes-button, .reset-notes-button, .retry-button, .print-button {
+    font-size: 13px;
+    padding: 10px 14px;
+  }
+}
+
+/* Landscape orientation on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .App-header {
+    padding: 1rem 0;
+  }
+  
+  .App-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .diet-selector, .search-section, .dietary-notes-section {
+    padding: 1rem;
+  }
+  
+  .dietary-notes-textarea {
+    min-height: 60px;
+    rows: 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .App-main {
+    padding: 0 1rem;
+  }
+  
+  .App-header h1 {
+    font-size: 2rem;
+    padding: 0 1rem;
+  }
+  
+  .diet-selector, .search-section {
+    padding: 1.5rem;
+    border-radius: 12px;
+  }
+  
+  .diet-dropdown, .search-input {
+    min-width: 100%;
+    padding: 12px 16px;
+    border-radius: 20px;
+  }
+  
+  .search-section h4 {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .App-header {
+    padding: 1.5rem 0;
+  }
+  
+  .App-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .diet-selector, .search-section, .no-diet-message {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+    padding: 1rem;
+  }
+  
+  .diet-dropdown, .search-input {
+    padding: 10px 14px;
+    font-size: 14px;
   }
 }
