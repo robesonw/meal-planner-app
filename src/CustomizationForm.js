@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import './CustomizationForm.css';
 
-const CustomizationForm = ({ generatedMenu, setGeneratedMenu, setShowGeneratedMenu }) => {
+const CustomizationForm = ({ generatedMenu, setGeneratedMenu, setShowGeneratedMenu, selectedDiet }) => {
   const [likes, setLikes] = useState(() => {
     try {
       const saved = localStorage.getItem('menuPreferences');
@@ -46,6 +47,33 @@ const CustomizationForm = ({ generatedMenu, setGeneratedMenu, setShowGeneratedMe
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Dynamic system prompts based on diet type
+  const getDietSystemPrompt = (dietType) => {
+    switch (dietType) {
+      case 'Liver-Centric':
+        return 'You are a nutrition expert specializing in liver-friendly Mediterranean diets for NAFLD (Non-Alcoholic Fatty Liver Disease). Focus on foods that support liver health, reduce inflammation, and promote liver detoxification. Always respond with well-formatted markdown tables.';
+      case 'Low-Sugar':
+        return 'You are a nutrition expert specializing in diabetic-friendly and low-glycemic diets. Focus on blood sugar management, insulin sensitivity, and metabolic health. Emphasize foods with low glycemic index and stable blood sugar response. Always respond with well-formatted markdown tables.';
+      case 'Vegetarian':
+        return 'You are a nutrition expert specializing in balanced vegetarian diets. Focus on plant-based protein sources, complete amino acid profiles, and nutrient density. Ensure adequate B12, iron, and omega-3 fatty acids. Always respond with well-formatted markdown tables.';
+      default:
+        return 'You are a nutrition expert specializing in healthy, balanced meal planning. Always respond with well-formatted markdown tables.';
+    }
+  };
+
+  const getDietFocus = (dietType) => {
+    switch (dietType) {
+      case 'Liver-Centric':
+        return 'Mediterranean diet principles and liver health';
+      case 'Low-Sugar':
+        return 'low-glycemic foods and blood sugar management';
+      case 'Vegetarian':
+        return 'plant-based nutrition and protein balance';
+      default:
+        return 'balanced nutrition principles';
+    }
+  };
+
   // Save preferences to localStorage whenever they change
   useEffect(() => {
     try {
@@ -69,92 +97,39 @@ const CustomizationForm = ({ generatedMenu, setGeneratedMenu, setShowGeneratedMe
     setShowGeneratedMenu(false);
 
     try {
-      // Build the prompt
-      const prompt = `Create a ${duration} liver-centric fatty liver diet menu, include ${likes}, strictly avoid ${dislikes}, focus on ${mealFocus}. Use Mediterranean style, healthy fats, veggies, lean proteins. ${dietNotes ? `Additional notes: ${dietNotes}` : ''}`;
-
-      // Check if running locally or in production
-      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      // Build the prompt with dynamic diet focus
+      const dietFocus = getDietFocus(selectedDiet);
+      const prompt = `Create a ${duration} ${selectedDiet.toLowerCase()} diet menu, include ${likes}, strictly avoid ${dislikes}, focus on ${mealFocus}. Focus on ${dietFocus}. ${dietNotes ? `Additional notes: ${dietNotes}` : ''}`;
       
-      if (isLocal) {
-        // Use Google Generative AI directly for local development
-        const apiKey = process.env.REACT_APP_GOOGLE_API_KEY;
-        if (!apiKey) {
-          throw new Error('Google API key not found. Please check your .env file.');
-        }
+      // Get dynamic system prompt based on selected diet
+      const systemPrompt = getDietSystemPrompt(selectedDiet);
+      
+      // Use our Vercel serverless function with Groq AI
+      const response = await fetch('/api/generate-menu', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          prompt,
+          dietType: selectedDiet,
+          systemPrompt: systemPrompt
+        }),
+      });
 
-        const genAI = new GoogleGenerativeAI(apiKey);
-        
-        // First, try to list available models
-        let availableModels = [];
-        try {
-          const models = await genAI.listModels();
-          availableModels = models.map(model => model.name);
-          console.log('Available models:', availableModels);
-        } catch (listError) {
-          console.warn('Could not list models:', listError.message);
-        }
-        
-        // Try current 2025 models first, then fallback to older ones
-        const modelNamesToTry = [
-          'gemini-3-flash-preview',
-          'gemini-2.5-flash',
-          ...availableModels,
-          'gemini-1.5-pro-latest',
-          'gemini-1.5-pro',
-          'gemini-pro',
-          'models/gemini-3-flash-preview',
-          'models/gemini-2.5-flash',
-          'models/gemini-1.5-pro-latest',
-          'models/gemini-1.5-pro',
-          'models/gemini-pro'
-        ].filter((value, index, self) => self.indexOf(value) === index); // Remove duplicates
-        
-        let result;
-        let lastError;
-        
-        for (const modelName of modelNamesToTry) {
-          try {
-            console.log(`Trying model: ${modelName}`);
-            const model = genAI.getGenerativeModel({ model: modelName });
-            
-            // Add system instruction in the prompt instead
-            const fullPrompt = `You are a nutrition expert specializing in liver-friendly Mediterranean diets for NAFLD. Always output as a clean markdown table with columns: Day, Breakfast, Lunch, Dinner, Snacks. Include approximate calories and why it's liver-healthy.
-
-            ${prompt}`;
-
-            result = await model.generateContent(fullPrompt);
-            console.log(`Success with model: ${modelName}`);
-            break; // Success, exit loop
-          } catch (err) {
-            console.log(`Failed with model ${modelName}:`, err.message);
-            lastError = err;
-            continue; // Try next model
-          }
-        }
-        
-        if (!result) {
-          throw new Error(`All available models failed. Available models were: ${availableModels.join(', ')}. Last error: ${lastError?.message}`);
-        }
-        const response = await result.response;
-        const menu = response.text();
-        setGeneratedMenu(menu);
-      } else {
-        // Use serverless function for production
-        const response = await fetch('/api/generate-menu', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ prompt }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to generate menu');
-        }
-
-        const data = await response.json();
-        setGeneratedMenu(data.menu);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate menu');
       }
+
+      const data = await response.json();
+      setGeneratedMenu(data.menu);
+      setShowGeneratedMenu(true);
+      
+      // Save the generated menu to localStorage
+      localStorage.setItem('lastGeneratedMenu', data.menu);
+      localStorage.setItem('lastMenuTimestamp', new Date().toISOString());
+      
     } catch (err) {
       setError(`Failed to generate personalized menu: ${err.message}`);
       console.error('Error generating menu:', err);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import './App.css';
 import MenuDisplay from './MenuDisplay';
 import CustomizationForm from './CustomizationForm';
@@ -859,6 +860,7 @@ function App() {
           generatedMenu={generatedMenu}
           setGeneratedMenu={setGeneratedMenu}
           setShowGeneratedMenu={setShowGeneratedMenu}
+          selectedDiet={selectedDiet}
         />
         
         {/* Generated Menu Display */}
@@ -882,7 +884,7 @@ function App() {
               </button>
             </div>
             <div className="markdown-content">
-              <ReactMarkdown>{generatedMenu}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{generatedMenu}</ReactMarkdown>
             </div>
           </div>
         )}
@@ -900,7 +902,7 @@ function App() {
               </button>
             </div>
             <div className="markdown-content active">
-              <ReactMarkdown>{generatedMenu}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{generatedMenu}</ReactMarkdown>
             </div>
           </div>
         )}
