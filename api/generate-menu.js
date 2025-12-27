@@ -33,12 +33,33 @@ export default async function handler(req, res) {
     // Initialize Google Generative AI
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // Try different model names
-    const modelNames = ['gemini-1.5-pro', 'gemini-pro', 'models/gemini-1.5-pro', 'models/gemini-pro'];
+    // First, list available models
+    console.log('Listing available models...');
+    let availableModels = [];
+    try {
+      const models = await genAI.listModels();
+      availableModels = models.map(model => model.name);
+      console.log('Available models:', availableModels);
+    } catch (listError) {
+      console.log('Could not list models:', listError.message);
+    }
+    
+    // Try available models first, then fallback to common names
+    const modelNamesToTry = [
+      ...availableModels,
+      'gemini-1.5-pro',
+      'gemini-pro',
+      'gemini-1.5-flash',
+      'models/gemini-1.5-pro',
+      'models/gemini-pro'
+    ].filter((value, index, self) => self.indexOf(value) === index); // Remove duplicates
+    
+    console.log('Models to try:', modelNamesToTry);
+    
     let result;
     let lastError;
     
-    for (const modelName of modelNames) {
+    for (const modelName of modelNamesToTry) {
       try {
         console.log(`Trying model: ${modelName}`);
         const model = genAI.getGenerativeModel({ model: modelName });
@@ -61,7 +82,7 @@ export default async function handler(req, res) {
     }
     
     if (!result) {
-      throw new Error(`All models failed. Last error: ${lastError?.message}`);
+      throw new Error(`All models failed. Available models were: ${availableModels.join(', ')}. Last error: ${lastError?.message}`);
     }
 
     const response = await result.response;
