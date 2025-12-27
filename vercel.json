@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "name": "meal-planner-app",
   "builds": [
     {
       "src": "package.json",

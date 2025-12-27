@@ -626,7 +626,7 @@ function App() {
       setError('');
       setDietaryNotes('');
     }
-  }, [selectedDiet]);
+  }, [selectedDiet, mealPlans]);
 
   const filteredMealPlan = filterMealsBySearch(mealPlan, searchTerm);
 
