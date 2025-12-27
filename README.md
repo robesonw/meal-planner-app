@@ -5,11 +5,13 @@ A React-based meal planning application that helps users create personalized 7-d
 ## Features
 
 ### 🥗 Diet Types
+
 - **Liver-Centric**: Focus on liver health with organ meats and detox-friendly foods
 - **Low-Sugar**: Protein-rich, low-carb meals for blood sugar management
 - **Vegetarian**: Plant-based nutrition with complete proteins
 
 ### 📋 Meal Planning
+
 - 7-day weekly meal plans with detailed information
 - Breakfast, lunch, and dinner for each day
 - Calorie estimates (400-570 kcal range per meal)
@@ -17,22 +19,26 @@ A React-based meal planning application that helps users create personalized 7-d
 - Step-by-step preparation tips
 
 ### 🔍 Search & Filter
+
 - Search meals by ingredient (e.g., "salmon", "quinoa", "tofu")
 - Real-time filtering with highlighting
 - Shows matching days with relevant meals
 
 ### 📝 Custom Dietary Modifications
+
 - Add personal dietary notes and restrictions
 - Smart ingredient replacements (e.g., "Replace beef with tofu")
 - Automatic substitutions for common restrictions
 - Visual indicators for modified meals
 
 ### 🖨️ Print & Export
+
 - Generate PDF meal plans
 - Print-optimized layouts
 - Professional formatting for easy reference
 
 ### 📱 Mobile-Friendly Design
+
 - Responsive design for all screen sizes
 - Touch-optimized interface
 - Smooth animations and transitions
@@ -48,12 +54,14 @@ A React-based meal planning application that helps users create personalized 7-d
 ## Installation
 
 1. Clone the repository
+
 ```bash
 git clone https://github.com/robesonw/meal-planner-app.git
 cd meal-planner-app
 ```
 
 2. Install dependencies
+
 ```bash
 npm install
 ```

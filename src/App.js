@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useReactToPrint } from 'react-to-print';
+import ReactMarkdown from 'react-markdown';
 import './App.css';
 import MenuDisplay from './MenuDisplay';
+import CustomizationForm from './CustomizationForm';
 
 function App() {
   const [selectedDiet, setSelectedDiet] = useState('');
@@ -11,6 +13,20 @@ function App() {
   const [originalMealPlan, setOriginalMealPlan] = useState([]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [generatedMenu, setGeneratedMenu] = useState(() => {
+    try {
+      return localStorage.getItem('generatedMenu') || '';
+    } catch {
+      return '';
+    }
+  });
+  const [showGeneratedMenu, setShowGeneratedMenu] = useState(() => {
+    try {
+      return localStorage.getItem('showGeneratedMenu') === 'true';
+    } catch {
+      return false;
+    }
+  });
   const componentRef = useRef();
 
   // Sample meal plans for different dietary types
@@ -628,7 +644,41 @@ function App() {
     }
   }, [selectedDiet, mealPlans]);
 
+  // Save generated menu and display state to localStorage
+  useEffect(() => {
+    try {
+      if (generatedMenu) {
+        localStorage.setItem('generatedMenu', generatedMenu);
+      } else {
+        localStorage.removeItem('generatedMenu');
+      }
+    } catch (error) {
+      console.error('Failed to save generated menu to localStorage:', error);
+    }
+  }, [generatedMenu]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('showGeneratedMenu', showGeneratedMenu.toString());
+    } catch (error) {
+      console.error('Failed to save menu display state to localStorage:', error);
+    }
+  }, [showGeneratedMenu]);
+
   const filteredMealPlan = filterMealsBySearch(mealPlan, searchTerm);
+
+  // Function to clear all stored data
+  const clearStoredData = () => {
+    try {
+      localStorage.removeItem('generatedMenu');
+      localStorage.removeItem('showGeneratedMenu');
+      localStorage.removeItem('menuPreferences');
+      setGeneratedMenu('');
+      setShowGeneratedMenu(false);
+    } catch (error) {
+      console.error('Failed to clear stored data:', error);
+    }
+  };
 
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
@@ -803,6 +853,57 @@ function App() {
             <p>Select a diet to view your plan</p>
           </div>
         ) : null}
+        
+        {/* AI-Powered Menu Customization */}
+        <CustomizationForm 
+          generatedMenu={generatedMenu}
+          setGeneratedMenu={setGeneratedMenu}
+          setShowGeneratedMenu={setShowGeneratedMenu}
+        />
+        
+        {/* Generated Menu Display */}
+        {generatedMenu && (
+          <div className="generated-menu-section">
+            <div className="generated-menu-header">
+              <h2>🤖 AI-Generated Menu</h2>
+              <button 
+                className="use-menu-button"
+                onClick={() => setShowGeneratedMenu(true)}
+                disabled={showGeneratedMenu}
+              >
+                {showGeneratedMenu ? '✓ Using This Menu' : '📋 Use This Menu'}
+              </button>
+              <button 
+                className="clear-storage-button"
+                onClick={clearStoredData}
+                title="Clear all saved preferences and generated menu"
+              >
+                🗑️ Clear Saved Data
+              </button>
+            </div>
+            <div className="markdown-content">
+              <ReactMarkdown>{generatedMenu}</ReactMarkdown>
+            </div>
+          </div>
+        )}
+        
+        {/* Show Generated Menu when selected */}
+        {showGeneratedMenu && generatedMenu && (
+          <div className="active-generated-menu">
+            <div className="menu-switch-header">
+              <h2>📋 Active AI Menu</h2>
+              <button 
+                className="back-to-presets-button"
+                onClick={() => setShowGeneratedMenu(false)}
+              >
+                🔄 Back to Preset Menus
+              </button>
+            </div>
+            <div className="markdown-content active">
+              <ReactMarkdown>{generatedMenu}</ReactMarkdown>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
