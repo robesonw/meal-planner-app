@@ -633,6 +633,19 @@ function App() {
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
     documentTitle: `${selectedDiet} Diet - 7-Day Meal Plan`,
+    onBeforeGetContent: () => {
+      // Force all accordions to be expanded before printing
+      const accordionContents = document.querySelectorAll('.accordion-content');
+      accordionContents.forEach(content => {
+        content.style.maxHeight = 'none';
+        content.style.opacity = '1';
+        content.style.transform = 'none';
+        content.style.display = 'block';
+        content.style.padding = '1rem';
+        content.style.overflow = 'visible';
+      });
+      return Promise.resolve();
+    },
     pageStyle: `
       @page {
         size: A4;
@@ -644,6 +657,14 @@ function App() {
         }
         .no-print {
           display: none !important;
+        }
+        .accordion-content {
+          max-height: none !important;
+          opacity: 1 !important;
+          transform: none !important;
+          display: block !important;
+          padding: 1rem !important;
+          overflow: visible !important;
         }
       }
     `

@@ -405,6 +405,7 @@
     border: 1px solid #ddd;
   }
   
+  /* Force all accordion items to be expanded in print */
   .accordion-item {
     page-break-inside: avoid;
     border: 1px solid #ddd;
@@ -422,6 +423,7 @@
     transform: none !important;
     padding: 1rem !important;
     display: block !important;
+    overflow: visible !important;
   }
   
   .accordion-icon {
@@ -432,6 +434,7 @@
     margin-bottom: 1rem;
     border: 1px solid #ddd;
     background: white !important;
+    page-break-inside: avoid;
   }
   
   .highlight {
@@ -441,6 +444,12 @@
   
   .calories {
     background: #667eea !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact;
+  }
+  
+  .modified-badge {
+    background: #28a745 !important;
     color: white !important;
     -webkit-print-color-adjust: exact;
   }
