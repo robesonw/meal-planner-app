@@ -631,7 +631,7 @@ function App() {
   const filteredMealPlan = filterMealsBySearch(mealPlan, searchTerm);
 
   const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
+    contentRef: componentRef,
     documentTitle: `${selectedDiet} Diet - 7-Day Meal Plan`,
     pageStyle: `
       @page {
