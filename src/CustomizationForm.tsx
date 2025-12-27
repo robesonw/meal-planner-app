@@ -3,8 +3,20 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import './CustomizationForm.css';
 
-const CustomizationForm = ({ generatedMenu, setGeneratedMenu, setShowGeneratedMenu, selectedDiet }) => {
-  const [likes, setLikes] = useState(() => {
+interface CustomizationFormProps {
+  generatedMenu: string;
+  setGeneratedMenu: (menu: string) => void;
+  setShowGeneratedMenu: (show: boolean) => void;
+  selectedDiet: string;
+}
+
+const CustomizationForm: React.FC<CustomizationFormProps> = ({ 
+  generatedMenu, 
+  setGeneratedMenu, 
+  setShowGeneratedMenu, 
+  selectedDiet 
+}) => {
+  const [likes, setLikes] = useState<string>(() => {
     try {
       const saved = localStorage.getItem('menuPreferences');
       return saved ? JSON.parse(saved).likes || '' : '';
@@ -12,7 +24,7 @@ const CustomizationForm = ({ generatedMenu, setGeneratedMenu, setShowGeneratedMe
       return '';
     }
   });
-  const [dislikes, setDislikes] = useState(() => {
+  const [dislikes, setDislikes] = useState<string>(() => {
     try {
       const saved = localStorage.getItem('menuPreferences');
       return saved ? JSON.parse(saved).dislikes || '' : '';
@@ -20,7 +32,7 @@ const CustomizationForm = ({ generatedMenu, setGeneratedMenu, setShowGeneratedMe
       return '';
     }
   });
-  const [duration, setDuration] = useState(() => {
+  const [duration, setDuration] = useState<string>(() => {
     try {
       const saved = localStorage.getItem('menuPreferences');
       return saved ? JSON.parse(saved).duration || 'Full Week' : 'Full Week';
@@ -28,7 +40,7 @@ const CustomizationForm = ({ generatedMenu, setGeneratedMenu, setShowGeneratedMe
       return 'Full Week';
     }
   });
-  const [mealFocus, setMealFocus] = useState(() => {
+  const [mealFocus, setMealFocus] = useState<string>(() => {
     try {
       const saved = localStorage.getItem('menuPreferences');
       return saved ? JSON.parse(saved).mealFocus || 'Full Meals' : 'Full Meals';
@@ -36,7 +48,7 @@ const CustomizationForm = ({ generatedMenu, setGeneratedMenu, setShowGeneratedMe
       return 'Full Meals';
     }
   });
-  const [dietNotes, setDietNotes] = useState(() => {
+  const [dietNotes, setDietNotes] = useState<string>(() => {
     try {
       const saved = localStorage.getItem('menuPreferences');
       return saved ? JSON.parse(saved).dietNotes || '' : '';
@@ -44,8 +56,8 @@ const CustomizationForm = ({ generatedMenu, setGeneratedMenu, setShowGeneratedMe
       return '';
     }
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
 
   // Dynamic system prompts based on diet type
   const getDietSystemPrompt = (dietType) => {

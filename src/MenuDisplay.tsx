@@ -1,21 +1,44 @@
 import React, { useState } from 'react';
 import './MenuDisplay.css';
 
-const MenuDisplay = ({ menu, searchTerm }) => {
-  const [expandedDay, setExpandedDay] = useState(null);
+interface MealInfo {
+  name: string;
+  calories: string;
+  nutrients: string;
+  prepTip: string;
+}
 
-  const toggleDay = (index) => {
+interface DayMealPlan {
+  day: string;
+  breakfast: MealInfo;
+  lunch: MealInfo;
+  dinner: MealInfo;
+}
+
+interface MenuDisplayProps {
+  menu: DayMealPlan[];
+  searchTerm: string;
+}
+
+const MenuDisplay: React.FC<MenuDisplayProps> = ({ menu, searchTerm }) => {
+  const [expandedDay, setExpandedDay] = useState<number | null>(null);
+
+  const toggleDay = (index: number): void => {
     setExpandedDay(expandedDay === index ? null : index);
   };
 
-  const highlightText = (text, highlight) => {
+  const highlightText = (text: string, highlight: string): JSX.Element | string => {
     if (!highlight || !text) return text;
     
     try {
       const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
-      return parts.map((part, i) => 
-        part.toLowerCase() === highlight.toLowerCase() ? 
-          <mark key={i} className="highlight">{part}</mark> : part
+      return (
+        <>
+          {parts.map((part, i) => 
+            part.toLowerCase() === highlight.toLowerCase() ? 
+              <mark key={i} className="highlight">{part}</mark> : part
+          )}
+        </>
       );
     } catch (error) {
       console.warn('Error highlighting text:', error);

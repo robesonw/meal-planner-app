@@ -6,32 +6,51 @@ import './App.css';
 import MenuDisplay from './MenuDisplay';
 import CustomizationForm from './CustomizationForm';
 
-function App() {
-  const [selectedDiet, setSelectedDiet] = useState('');
-  const [mealPlan, setMealPlan] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [dietaryNotes, setDietaryNotes] = useState('');
-  const [originalMealPlan, setOriginalMealPlan] = useState([]);
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [generatedMenu, setGeneratedMenu] = useState(() => {
+// TypeScript interfaces
+interface MealInfo {
+  name: string;
+  calories: string;
+  nutrients: string;
+  prepTip: string;
+}
+
+interface DayMealPlan {
+  day: string;
+  breakfast: MealInfo;
+  lunch: MealInfo;
+  dinner: MealInfo;
+}
+
+interface MealPlans {
+  [key: string]: DayMealPlan[];
+}
+
+function App(): JSX.Element {
+  const [selectedDiet, setSelectedDiet] = useState<string>('');
+  const [mealPlan, setMealPlan] = useState<DayMealPlan[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [dietaryNotes, setDietaryNotes] = useState<string>('');
+  const [originalMealPlan, setOriginalMealPlan] = useState<DayMealPlan[]>([]);
+  const [error, setError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [generatedMenu, setGeneratedMenu] = useState<string>(() => {
     try {
       return localStorage.getItem('generatedMenu') || '';
     } catch {
       return '';
     }
   });
-  const [showGeneratedMenu, setShowGeneratedMenu] = useState(() => {
+  const [showGeneratedMenu, setShowGeneratedMenu] = useState<boolean>(() => {
     try {
       return localStorage.getItem('showGeneratedMenu') === 'true';
     } catch {
       return false;
     }
   });
-  const componentRef = useRef();
+  const componentRef = useRef<HTMLDivElement>(null);
 
   // Sample meal plans for different dietary types
-  const mealPlans = {
+  const mealPlans: MealPlans = {
     'Liver-Centric': [
       { 
         day: 'Monday', 
